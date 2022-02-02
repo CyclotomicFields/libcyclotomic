@@ -1,6 +1,10 @@
+#include "../include/cyclotomic.h"
 #include <iostream>
-#include "../include/cyclotom.h"
+
+namespace cyclotomic {
 
 void hello() {
   std::cout << "Hello, world!\n";
+}
+
 }

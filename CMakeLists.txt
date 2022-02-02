@@ -15,7 +15,7 @@ file(GLOB HEADERS include/*.h)
 install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})
 
 set(TEST_SOURCES
-    test/cyclotom.t.cpp
+    test/cyclotomic.t.cpp
 )
 
 find_package(GTest 1.11.0 CONFIG REQUIRED)

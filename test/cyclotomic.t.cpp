@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <cyclotomic/cyclotom.h>
+#include <cyclotomic.h>
 
 TEST(Cyclotomic, DoesntCrash) {
-  hello();
+  cyclotomic::hello();
 }
