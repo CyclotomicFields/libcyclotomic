@@ -101,6 +101,8 @@
 #include "plist.h"
 #include "saveload.h"
 
+#include <stdio.h>
+
 
 /****************************************************************************
 **
@@ -235,7 +237,7 @@ static Obj TypeCyc(Obj cyc)
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-static void PrintCyc(Obj cyc)
+void PrintCyc(Obj cyc)
 {
     UInt                n;              /* order of the field              */
     UInt                len;            /* number of terms                 */
@@ -243,7 +245,6 @@ static void PrintCyc(Obj cyc)
 
     n   = INT_INTOBJ( NOF_CYC(cyc) );
     len = SIZE_CYC(cyc);
-    Pr("%>", 0, 0);
     for ( i = 1; i < len; i++ ) {
         // Store value in local variable, as they can change during Pr
         const Obj *   cfs = CONST_COEFS_CYC(cyc);
@@ -252,57 +253,53 @@ static void PrintCyc(Obj cyc)
         UInt4         exsi = exs[i];
 
         if (cfsi == INTOBJ_INT(1) && exsi == 0)
-            Pr("1", 0, 0);
+            printf("1");
         else if (cfsi == INTOBJ_INT(1) && exsi == 1 && i == 1)
-            Pr("%>E(%d%<)", n, 0);
+            printf("E(%lu)", n);
         else if (cfsi == INTOBJ_INT(1) && exsi == 1)
-            Pr("%>+E(%d%<)", n, 0);
+            printf("+E(%lu)", n, 0);
         else if (cfsi == INTOBJ_INT(1) && i == 1)
-            Pr("%>E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("E(%lu)^<%lu", n, (Int)exsi);
         else if (cfsi == INTOBJ_INT(1))
-            Pr("%>+E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("+E(%lu)^<%lu", n, (Int)exsi);
         else if (LT(INTOBJ_INT(0), cfsi) && exsi == 0)
             PrintObj(cfsi);
         else if (LT(INTOBJ_INT(0), cfsi) && exsi == 1 && i == 1) {
-            Pr("%>", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d%<)", n, 0);
+            printf("*E(%lu)", n, 0);
         }
         else if (LT(INTOBJ_INT(0), cfsi) && exsi == 1) {
-            Pr("%>+", 0, 0);
+            printf("+", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d%<)", n, 0);
+            printf("*E(%lu)", n, 0);
         }
         else if (LT(INTOBJ_INT(0), cfsi) && i == 1) {
-            Pr("%>", 0, 0);
+            printf("", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("*E(%lu)^<%lu", n, (Int)exsi);
         }
         else if (LT(INTOBJ_INT(0), cfsi)) {
-            Pr("%>+", 0, 0);
+            printf("+", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("*E(%lu)^<%lu", n, (Int)exsi);
         }
         else if (cfsi == INTOBJ_INT(-1) && exsi == 0)
-            Pr("%>-%<1", 0, 0);
+            printf("-1", 0, 0);
         else if (cfsi == INTOBJ_INT(-1) && exsi == 1)
-            Pr("%>-E(%d%<)", n, 0);
+            printf("-E(%lu)", n, 0);
         else if (cfsi == INTOBJ_INT(-1))
-            Pr("%>-E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("-E(%lu)^<%lu", n, (Int)exsi);
         else if (exsi == 0)
             PrintObj(cfsi);
         else if (exsi == 1) {
-            Pr("%>", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d%<)", n, 0);
+            printf("*E(%lu)", n, 0);
         }
         else {
-            Pr("%>", 0, 0);
             PrintObj(cfsi);
-            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+            printf("*E(%lu)^<%lu", n, (Int)exsi);
         }
     }
-    Pr("%<", 0, 0);
 }
 
 
@@ -830,8 +827,8 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   /* Handle the soft limit */
   while (n > CyclotomicsLimit) {
       ErrorReturnVoid(
-          "This computation requires a cyclotomic field of degree %d, larger "
-          "than the current limit of %d",
+          "This computation requires a cyclotomic field of degree %lu, larger "
+          "than the current limit of %lu",
           n, (Int)CyclotomicsLimit,
           "You may return after raising the limit with SetCyclotomicsLimit");
   }
@@ -850,7 +847,7 @@ static Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit)
 
     if (ulimit < CyclotomicsLimit) {
         ErrorMayQuit("SetCyclotomicsLimit: <newlimit> must not be less than "
-                     "old limit of %d",
+                     "old limit of %lu",
                      CyclotomicsLimit, 0);
     }
 #ifdef SYS_IS_64_BIT
@@ -1487,7 +1484,7 @@ static Obj PowCyc(Obj opL, Obj opR)
 */
 static Obj EOper;
 
-static Obj FuncE(Obj self, Obj n)
+Obj FuncE(Obj self, Obj n)
 {
     Obj *               res;            /* pointer into result bag         */
 
@@ -1641,7 +1638,7 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
             if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT &&
                 TNUM_OBJ(cyc) != T_CYC) {
                 ErrorMayQuit(
-                    "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
+                    "Conductor: <list>[%lu] must be a cyclotomic (not a %s)",
                     (Int)i, (Int)TNAM_OBJ(cyc));
             }
             if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {

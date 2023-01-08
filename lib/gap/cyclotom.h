@@ -42,4 +42,8 @@ EXPORT_INLINE BOOL IS_CYC(Obj o)
 StructInitInfo * InitInfoCyc ( void );
 
 
+Obj FuncE(Obj self, Obj n);
+void PrintCyc(Obj cyc);
+
+
 #endif // GAP_CYCLOTOM_H

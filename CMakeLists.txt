@@ -23,4 +23,5 @@ find_package(GTest 1.11.0 CONFIG REQUIRED)
 add_executable(unit_tests ${TEST_SOURCES} test/main.cpp)
 target_link_libraries(unit_tests GTest::gtest cyclotomic readline gmp z util dl)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
