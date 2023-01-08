@@ -5,7 +5,7 @@ source.
 
 I am literally copying
 <https://github.com/gap-system/gap/blob/master/src/cyclotom.c>,
-turning into a library, and seeing if I can make it easy to use, with
+turning it into a library, and seeing if I can make it easy to use, with
 a nice modern C++ interface, and perhaps faster.
 
 One problem I had while writing
